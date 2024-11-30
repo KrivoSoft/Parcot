@@ -43,7 +43,7 @@ def run_bot():
 
 
 async def is_user_unauthorized(message: Message):
-    authorized_ids = [user.telegram_id for user in Employee.select()]
+    authorized_ids = [employee.telegram_id for employee in Employee.select()]
 
     if message.from_user.id not in authorized_ids:
         return True
@@ -137,6 +137,8 @@ async def process_start_command(message: Message, state: FSMContext):
                 telegram_id=message.from_user.id
             )
             new_guest.save()
+        await send_refusal_unauthorized(message)
+        return 0
 
     """ Переменные, указывающие на то, какие кнопки меню будут доступны в дальнейшем """
     show_change_spot_type_button = False
@@ -189,8 +191,6 @@ async def process_start_command(message: Message, state: FSMContext):
 
     current_date = date.today()
     current_time = datetime.now().time()
-
-    await send_refusal_unauthorized(message)
 
     await state.clear()
 

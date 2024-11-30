@@ -1,5 +1,4 @@
 from typing import Optional
-
 import yaml
 from peewee import *
 
@@ -43,12 +42,13 @@ class Employee(BaseModel):
     department =  ForeignKeyField(Department, backref="department_id")
     role = CharField()
     lives = IntegerField()
+    telegram_id = IntegerField(null=False)
 
     class Meta:
         table_name = 'employees'
 
     @staticmethod
-    def get_user_by_id(the_user_id_i_want: int) -> Optional[Employee]:
+    def get_user_by_id(the_user_id_i_want: int):
         """ Функция, возвращающая нужного пользователя по его telegram id из БД """
         query: ModelSelect = Employee.select().where(Employee.telegram_id == the_user_id_i_want)
 
@@ -62,7 +62,7 @@ class Employee(BaseModel):
         user = Employee.get_user_by_id(user_telegram_id)
         if user is None:
             return None
-        return user.role_id.name
+        return user.role
 
 
 class Transport(BaseModel):
