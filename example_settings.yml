@@ -1,0 +1,13 @@
+# Токен для бота в телеграме
+API_TOKEN: 'YOUR TOKEN'
+
+# Имя базы данных SQLite, где будет храниться вся информация
+DB_NAME: "parking_spots.db"
+
+# Пользователи, которые будут добавляться в базу при запуске бота
+USERS:
+  - username: "krivosoft"
+    first_name: "Vladimir"
+    last_name: "Pn"
+    role: "ADMINISTRATOR"
+    telegram_id: 1543421535
