@@ -10,6 +10,6 @@ db_name = CONSTANTS['DB_NAME']
 def create_tables() -> None:
     """ Создание таблиц при создании новой БД """
     db.connect()
-    db.create_tables([ParkingSpot, ParkingSpotType, BookingType, Department, Employee, Transport, ParkingSpot, Booking])
+    db.create_tables([ParkingSpot, ParkingSpotType, BookingType, Department, Employee, Transport, ParkingSpot, Booking, Guest])
 
 create_tables()
