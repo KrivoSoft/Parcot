@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 import yaml
 from peewee import *
@@ -83,11 +84,44 @@ class ParkingSpot(BaseModel):
     class Meta:
         table_name = 'parking_spots'
 
+    @staticmethod
+    def get_booking_options(date_for_book: date, employee_id: Employee):
+        """ Функция, получающая доступные для бронирования варианты """
+
+        available_spots_for_book = []
+
+        employee = Employee.select().where(
+            Employee.id == employee_id
+        )
+
+        if employee.count() < 1:
+            print("Не нашёл такого пользователя с id", employee_id)
+            return 0
+
+        emp_department = Department.select().where(
+            Department.id == employee.department
+        )
+
+        if emp_department.count() < 1:
+            print("Не нашёл такой департамент", employee.department)
+            return 0
+
+        all_spots = ParkingSpot.select().where(
+            ParkingSpot.department == emp_department
+        )
+
+        # for one_spot in all_spots:
+        #     if one_spot.is_spot_free(date_for_book):
+        #         available_spots_for_book.append(one_spot)
+
+        return available_spots_for_book
+
 
 class Booking(BaseModel):
     parking_spot = ForeignKeyField(ParkingSpot, backref="spot_id")
     date_reservation = DateField()
     is_morning = BooleanField()
+    employee = ForeignKeyField(Employee, backref="employee_id")
 
     class Meta:
         table_name = 'bookings'

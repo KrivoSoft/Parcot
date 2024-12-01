@@ -216,4 +216,48 @@ async def send_refusal_unauthorized(message: Message):
     await message.answer(UNKNOWN_USER_MESSAGE_1)
 
 
+@dp.message(F.text == TEXT_BOOK_SPOT_BUTTON)
+async def process_booking(message: Message):
+    """ Обработчик запроса на бронирование парковочного места """
+
+    if await is_user_unauthorized(message):
+        await send_refusal_unauthorized(message)
+        return 0
+
+    user_id = message.from_user.id
+    requester_id = message.from_user.id
+    requester = Employee.get_user_by_id(requester_id)
+
+    if requester is None:
+        print("Ошибка")
+        return 0
+
+    """ Вычисление даты + 1 день (завтра) """
+    current_date = date.today()
+    checking_date = current_date + timedelta(days=1)
+
+    reservations_by_user_count = Booking.select(Booking, Employee).join(Employee).where(
+        Booking.employee == requester.id,
+        Booking.employee.name == requester.first_name,
+        Booking.date_reservation == checking_date
+    ).count()
+
+    if reservations_by_user_count > 0:
+        await message.reply(
+            text=f"У Вас уже есть забронированное место:",
+            reply_markup=ReplyKeyboardRemove()
+        )
+        reserved_place = Booking.get(
+            Booking.date_reservation == checking_date,
+            Booking.employee == requester.id
+        )
+        await message.answer(
+            text=f"Место: {reserved_place.parking_spot_id.name}, дата: {reserved_place.booking_date}"
+        )
+        return 0
+
+    date_for_book = current_date + timedelta(days=1)
+    available_spots = ParkingSpot.get_booking_options(date_for_book, requester.id)
+
+
 run_bot()
